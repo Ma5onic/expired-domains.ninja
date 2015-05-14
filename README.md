@@ -8,9 +8,7 @@ Help & Forks welcomed ! or please wait ... work in progress !
 How to install
 --------------
 
-    $ npm install crawler-ninja --save
-    $ npm install expired-domains-plugin --save
-    $ npm install simple-proxies --save // if you want to use proxies
+    $ npm install crawler-ninja crawler-ninja-expired simple-proxies --save
 
 
 Crash course

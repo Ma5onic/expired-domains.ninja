@@ -13,7 +13,7 @@ var STATUS_DNS_LOOKUP_ERROR = "DNS lookup failed";
 /**
  *  Find expired domains
  *
- *  In progress
+ *  In progress ... please wait 
  */
 function Plugin(crawler) {
 
@@ -23,6 +23,8 @@ function Plugin(crawler) {
 
     this.crawler.on("error", function(error, result){
 
+        //TODO : Review this code, need to check other info on the domain :
+        //       is available ?, pending delete ? PageRank ? TrustFlow/Citation Flow, ...  ?
         if (error.code == ERROR_DNS_LOOKUP) {
           var host = URI.host(result.uri);
           console.log(host);

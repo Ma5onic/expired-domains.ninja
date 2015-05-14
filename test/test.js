@@ -9,7 +9,7 @@ var expired   = require("../index.js");
 describe('Expired domains plugin', function() {
 
         it('Should return a list of expired domains', function(done) {
-            this.timeout(20000);
+            
             var c = new crawler.Crawler({
                 externalLinks : true,
                 images : false,
