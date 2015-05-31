@@ -15,7 +15,9 @@ describe('Expired domains plugin', function() {
                 images : false,
                 scripts : false,
                 links : false, //link tags used for css, canonical, ...
-                followRedirect : true
+                followRedirect : true,
+                retries : 0
+
             });
 
             var log = new logger.Plugin(c);

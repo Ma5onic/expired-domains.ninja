@@ -22,7 +22,6 @@ function Plugin(crawler) {
     this.expireds = new Map();
     var self = this;
 
-    //this.log = log.createLogger("expireds", process.cwd() + "/logs/totos.log", true);
     //TODO : Get the resources with http status =  50*
     //       => get the root domaine & make a new request on it in order
     //       if it is the entire site that is on 50*
@@ -35,6 +34,7 @@ function Plugin(crawler) {
         //TODO : Review this code, need to check other info on the domain :
         //       is available ?, pending delete ? PageRank ? TrustFlow/Citation Flow, ...  ?
         if (error.code == ERROR_DNS_LOOKUP) {
+          
           var host = URI.host(result.uri);
           log.info({expired : true, host : host});
 
