@@ -8,14 +8,15 @@
     "url": "https://github.com/christophebe/expired-domains.ninja"
   },
   "dependencies": {
-    "collections"   : "*"
+    "collections": "*"
+    
   },
   "devDependencies": {
     "mocha": "*",
     "expect": "*",
     "express": "*",
     "serve-static": "*",
-    "crawler-ninja" : "*"
+    "crawler-ninja": "*"
   },
   "keywords": [
     "web",

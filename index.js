@@ -2,10 +2,7 @@ var Map    = require("collections/fast-map");
 var URI    = require('crawler-ninja/lib/uri');
 var log    = require("crawler-ninja/lib/logger.js").Logger;
 
-var CONTENT_TYPE_HEADER = "content-type";
-var CONTENT_LENGTH_HEADER = "content-length";
 
-var ERROR_CODE_TIMEOUT = "ETIMEDOUT";
 var ERROR_DNS_LOOKUP = "ENOTFOUND";
 
 var STATUS_DNS_LOOKUP_ERROR = "DNS lookup failed";
@@ -34,9 +31,9 @@ function Plugin(crawler) {
         //TODO : Review this code, need to check other info on the domain :
         //       is available ?, pending delete ? PageRank ? TrustFlow/Citation Flow, ...  ?
         if (error.code == ERROR_DNS_LOOKUP) {
-          
+
           var host = URI.host(result.uri);
-          log.info({expired : true, host : host});
+          log.info({expired : true, host : host, url : result.url});
 
           self.expireds.set(host, {});
 
