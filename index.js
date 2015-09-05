@@ -1,6 +1,6 @@
 var Map    = require("collections/fast-map");
 var URI    = require('crawler-ninja/lib/uri');
-var log    = require("crawler-ninja/lib/logger.js").Logger;
+var log    = require("crawler-ninja/lib/logger.js");
 
 
 var ERROR_DNS_LOOKUP = "ENOTFOUND";
@@ -16,15 +16,22 @@ var STATUS_DNS_LOOKUP_ERROR = "DNS lookup failed";
 function Plugin(crawler) {
 
     this.crawler = crawler;
-    this.expireds = new Map();
     var self = this;
 
-    //TODO : Get the resources with http status =  50*
-    //       => get the root domaine & make a new request on it in order
-    //       if it is the entire site that is on 50*
-    //       => if so, add into a list to sites to follow & recheck later
+    var expiredLog = log.createLogger("expireds", "./expireds.log");
 
+    //TODO :
+    // For the resources with http status =  50*
+    // 1. Check the root domain
+    // if also in 500 => add to a list in order to check later if it moves to expired
 
+    this.crawler.on("crawl", function(result,$) {
+
+      if (result.statusCode >= 500 && result.statusCode <= 599 ) {
+
+        expiredLog.info({"500" : true, status : result.statusCode, host : host, url : result.url});
+      }
+    });
 
     this.crawler.on("error", function(error, result){
 
@@ -33,9 +40,7 @@ function Plugin(crawler) {
         if (error.code == ERROR_DNS_LOOKUP) {
 
           var host = URI.host(result.uri);
-          log.info({expired : true, host : host, url : result.url});
-
-          self.expireds.set(host, {});
+          expiredLog.info({expired : true, host : host, url : result.url});
 
         }
 
