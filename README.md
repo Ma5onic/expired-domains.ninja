@@ -42,7 +42,7 @@ proxyLoader.loadProxyFile(config, function(error, proxyList) {
 
 function crawl(proxyList){
     var c = new crawler.Crawler({
-        externalLinks : true,
+        externalDomains : true,
         images : false,
         scripts : false,
         links : false, //link tags used for css, canonical, ...

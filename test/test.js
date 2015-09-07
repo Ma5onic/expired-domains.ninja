@@ -1,5 +1,5 @@
 var assert    = require("assert");
-var logger    = require("crawler-ninja/plugins/log-plugin");
+var logger    = require("crawler-ninja/plugins/console-plugin");
 var crawler   = require("crawler-ninja");
 var testSite  = require("./website/start.js").site;
 
@@ -11,7 +11,8 @@ describe('Expired domains plugin', function() {
         it('Should return a list of expired domains', function(done) {
 
             var c = new crawler.Crawler({
-                externalLinks : true,
+                externalDomains : true,
+                firstExternalLinkOnly : true,
                 images : false,
                 scripts : false,
                 links : false, //link tags used for css, canonical, ...
@@ -20,7 +21,7 @@ describe('Expired domains plugin', function() {
 
             });
 
-            var log = new logger.Plugin(c);
+            //var log = new logger.Plugin(c);
             var ed = new expired.Plugin(c);
 
 

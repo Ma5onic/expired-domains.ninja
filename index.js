@@ -27,6 +27,7 @@ function Plugin(crawler) {
 
     this.crawler.on("crawl", function(result,$) {
 
+      //TODO : log only for externals domains
       if (result.statusCode >= 500 && result.statusCode <= 599 ) {
 
         expiredLog.info({"500" : true, status : result.statusCode, url : result.url});

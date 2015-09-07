@@ -1,4 +1,0 @@
-{"name":"expireds","hostname":"christophe.local","pid":2866,"level":30,"expired":true,"host":"www.thisnotcorrect.abc","url":"http://www.thisnotcorrect.abc/","msg":"","time":"2015-09-05T08:28:58.849Z","v":0}
-{"name":"expireds","hostname":"christophe.local","pid":2866,"level":30,"expired":true,"host":"www.thisnotcorrect2.abz","url":"http://www.thisnotcorrect2.abz/","msg":"","time":"2015-09-05T08:28:58.886Z","v":0}
-{"name":"expireds","hostname":"christophe.local","pid":2876,"level":30,"expired":true,"host":"www.thisnotcorrect.abc","url":"http://www.thisnotcorrect.abc/","msg":"","time":"2015-09-05T08:29:50.863Z","v":0}
-{"name":"expireds","hostname":"christophe.local","pid":2876,"level":30,"expired":true,"host":"www.thisnotcorrect2.abz","url":"http://www.thisnotcorrect2.abz/","msg":"","time":"2015-09-05T08:29:50.882Z","v":0}
