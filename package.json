@@ -16,7 +16,7 @@
     "expect": "*",
     "express": "*",
     "serve-static": "*",
-    "crawler-ninja": "*",
+    "crawler-ninja": "*"
   },
   "keywords": [
     "web",
