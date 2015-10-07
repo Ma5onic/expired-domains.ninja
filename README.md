@@ -3,7 +3,7 @@ Expired Domains Finder
 
 This [Crawler.Ninja](https://github.com/christophebe/crawler.ninja)  plugin aims to find expired domains by crawling web sites.
 
-Help & Forks welcomed ! or please wait ... work in progress !
+Help & Forks welcome ! or please wait ... work in progress !
 
 How to install
 --------------

@@ -9,9 +9,10 @@ var expired   = require("../index.js");
 describe('Expired domains plugin', function() {
 
         it('Should return a list of expired domains', function(done) {
-
+            this.timeout(40000);
             var c = new crawler.Crawler({
                 externalDomains : true,
+                externalHosts : true,
                 firstExternalLinkOnly : true,
                 images : false,
                 scripts : false,
@@ -21,8 +22,9 @@ describe('Expired domains plugin', function() {
 
             });
 
-            //var log = new logger.Plugin(c);
-            var ed = new expired.Plugin(c);
+            //var log = new logger.Plugin();
+            var ed = new expired.Plugin({expiredTxtFile : "./logs/expireds.txt"});
+            c.registerPlugin(ed);
 
 
             c.on("end", function(){
@@ -30,7 +32,6 @@ describe('Expired domains plugin', function() {
                 //assert(ed.expireds.length == 2);
                 //assert(ed.expireds.keys()[0] == "www.thisnotcorrect.abc");
                 //assert(ed.expireds.keys()[1] == "www.thisnotcorrect2.abz");
-
                 done();
 
             });

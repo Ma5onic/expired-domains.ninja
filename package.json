@@ -1,6 +1,6 @@
 {
   "name": "crawler-ninja-expired",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Expired domains finder for crawler.ninja",
   "main": "index.js",
   "repository": {
@@ -8,15 +8,15 @@
     "url": "https://github.com/christophebe/expired-domains.ninja"
   },
   "dependencies": {
-    "collections": "*"
-    
+    "check-domain": "*",
+    "crawler-ninja-logger" : "*"
   },
   "devDependencies": {
     "mocha": "*",
     "expect": "*",
     "express": "*",
     "serve-static": "*",
-    "crawler-ninja": "*"
+    "crawler-ninja": "*",
   },
   "keywords": [
     "web",
