@@ -25,6 +25,10 @@ function Plugin(params) {
     }
     this.expiredLog = logs.createLogger("expireds", {"path" : logFile});
 
+    if (params.majecticKey) {
+      this.majecticKey = params.majecticKey;
+    }
+
     if (params && params.expiredTxtFile) {
       expiredTxtFile = params.expiredTxtFile;
     }
@@ -72,6 +76,7 @@ Plugin.prototype.error = function(error, result, callback) {
 Plugin.prototype.check = function(domain, callback) {
     crawlLog.info({"url" : domain, "step" : "expired-domains-plugin", "message" : "check"});
 
+    // don't check twice the same domain
     if (this.domains.indexOf(domain) > -1) {
       return callback();
     }
@@ -79,14 +84,17 @@ Plugin.prototype.check = function(domain, callback) {
       this.domains.push(domain);
     }
 
-    var self = this;
-    domainChecker({domain : domain}, function(error, result) {
+    var params = {domain : domain};
+    if (this.majecticKey) {
+      params.majecticKey = this.majecticKey;
+    }
+    domainChecker(params, function(error, result) {
 
         if (error) {
           return callback(error);
         }
 
-        var line = result.domain + "," + (result.pr ? result.pr : "no-pr") + "," + result.available + "," + (result.whois.toString() ?  result.whois.toString(): "no-whois") + "\n";
+        var line = getLine(result);
 
         if (result.available == "NOT-AVAILABLE") {
 
@@ -98,6 +106,31 @@ Plugin.prototype.check = function(domain, callback) {
 
         callback();
     });
+}
+
+/**
+ * Build a new line. the line format is composed of the following data :
+ *
+ * domain name, PR, availability, whois, external backlinks, ref domains, ref domains edu, ref domains gov,
+ * TrustFlow, CitationFlow, TopicalTrustFlow 1, TopicalTrustFlow Value 1, TopicalTrustFlow 2, TopicalTrustFlow Value 2,
+ * TopicalTrustFlow 2, TopicalTrustFlow Value 2
+ */
+function getLine(result) {
+    //console.log(result);
+    var line = result.domain + "," + (result.pr ? result.pr : "no-pr") + "," + result.available + "," +
+               (result.whois.toString() ?  result.whois.toString(): "no-whois");
+
+    if (result.majestic) {
+      line += result.majestic.ExtBackLinks + "," + result.majestic.RefDomains + "," +
+      result.majestic.RefDomainsEDU + "," + result.majestic.RefDomainsGOV + "," +
+      result.majestic.TrustFlow + "," + result.majestic.CitationFlow + "," +
+      result.majestic.TopicalTrustFlow_Topic_0 + "," + result.majestic.TopicalTrustFlow_Value_0 + "," +
+      result.majestic.TopicalTrustFlow_Topic_1 + "," + result.majestic.TopicalTrustFlow_Value_1 + "," +
+      result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2 
+    }
+    line += "\n";
+
+    return line;
 }
 
 module.exports.Plugin = Plugin;

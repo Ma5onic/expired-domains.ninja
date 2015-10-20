@@ -3,3 +3,4 @@ node_modules
 todo.txt
 logs
 expireds.log
+test/test-majestic.js
