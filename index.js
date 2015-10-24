@@ -126,7 +126,7 @@ function getLine(result) {
       result.majestic.TrustFlow + "," + result.majestic.CitationFlow + "," +
       result.majestic.TopicalTrustFlow_Topic_0 + "," + result.majestic.TopicalTrustFlow_Value_0 + "," +
       result.majestic.TopicalTrustFlow_Topic_1 + "," + result.majestic.TopicalTrustFlow_Value_1 + "," +
-      result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2 
+      result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2; 
     }
     line += "\n";
 

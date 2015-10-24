@@ -10,7 +10,16 @@ describe('Expired domains plugin', function() {
 
         it('Should return a list of expired domains', function(done) {
             this.timeout(40000);
-            var c = new crawler.Crawler({
+            var end = function(){
+
+                //assert(ed.expireds.length == 2);
+                //assert(ed.expireds.keys()[0] == "www.thisnotcorrect.abc");
+                //assert(ed.expireds.keys()[1] == "www.thisnotcorrect2.abz");
+                done();
+
+            };
+
+            crawler.init({
                 externalDomains : true,
                 externalHosts : true,
                 firstExternalLinkOnly : true,
@@ -20,23 +29,13 @@ describe('Expired domains plugin', function() {
                 followRedirect : true,
                 retries : 0
 
-            });
+            }, end);
 
             //var log = new logger.Plugin();
             var ed = new expired.Plugin({expiredTxtFile : "./logs/expireds.txt"});
-            c.registerPlugin(ed);
+            crawler.registerPlugin(ed);
 
-
-            c.on("end", function(){
-
-                //assert(ed.expireds.length == 2);
-                //assert(ed.expireds.keys()[0] == "www.thisnotcorrect.abc");
-                //assert(ed.expireds.keys()[1] == "www.thisnotcorrect2.abz");
-                done();
-
-            });
-
-            c.queue({url : "http://localhost:9999/index.html"});
+            crawler.queue({url : "http://localhost:9999/index.html"});
 
         });
 });
