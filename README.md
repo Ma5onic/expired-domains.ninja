@@ -5,6 +5,8 @@ This [Crawler.Ninja](https://github.com/christophebe/crawler.ninja)  plugin aims
 
 Help & Forks welcome ! or please wait ... work in progress !
 
+Actually, the expired domain data are stored in the a txt file. We plan to add more flexiblities in the upcoming release.
+
 How to install
 --------------
 
@@ -41,39 +43,35 @@ proxyLoader.loadProxyFile(config, function(error, proxyList) {
 
 
 function crawl(proxyList){
-    var c = new crawler.Crawler({
-        externalDomains : true,
-        images : false,
-        scripts : false,
-        links : false, //link tags used for css, canonical, ...
-        followRedirect : true,
-        proxyList : proxyList
-    });
+  var end = function(){
 
-    var expired = new ep.Plugin(c);
+      conolog.log("end of the crawl");
 
-    c.on("end", function() {
+  };
 
-        var end = new Date();
-        console.log("Well done Sir !, done in : " + (end - start));
-        // the attributes expireds is a map with a key that match to the expired domains
-        console.log(ed.expireds.keys())
+  crawler.init({
+      externalDomains : true,
+      externalHosts : true,
+      firstExternalLinkOnly : true,
+      images : false,
+      scripts : false,
+      links : false, //link tags used for css, canonical, ...
+      followRedirect : true,
+      retries : 0
 
+  }, end);
 
+  //var log = new logger.Plugin();
+  var ed = new expired.Plugin({expiredTxtFile : "./logs/expireds.txt"});
+  crawler.registerPlugin(ed);
 
-    });
-
-    var start = new Date();
-    c.queue({url : "http://www.site.com"});
+  crawler.queue({url : "http://mysite.com"});
 }
-
-
-
 
 
 ```
 
-Using proxies is not mandatory but it is recommanded.Remove the attributes proxyList in the crawler constructor if you don't want to use proxies.
+Using proxies is not mandatory but it is recommanded. Remove the attributes proxyList in the crawler constructor if you don't want to use proxies.
 
 You can find all the crawler options on this [page](https://github.com/christophebe/crawler.ninja).
 
@@ -81,15 +79,4 @@ You can find all the crawler options on this [page](https://github.com/christoph
 Rough todolist
 --------------
 
- * Check if the domain is available and/or status (pending, ... )
- * Get Pagerank, TrustFlow and Citation Flow
  * Get the number of linked domains, anchor text infos, ...
- * Use Riak as default persistence layer
-
-
-
-ChangeLog
----------
-
-0.1.0
- - Basic implementation that logs domain that match to dns error
