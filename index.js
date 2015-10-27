@@ -121,12 +121,12 @@ function getLine(result) {
                (result.whois.toString() ?  result.whois.toString(): "no-whois");
 
     if (result.majestic) {
-      line += result.majestic.ExtBackLinks + "," + result.majestic.RefDomains + "," +
+      line += "," + result.majestic.ExtBackLinks + "," + result.majestic.RefDomains + "," +
       result.majestic.RefDomainsEDU + "," + result.majestic.RefDomainsGOV + "," +
       result.majestic.TrustFlow + "," + result.majestic.CitationFlow + "," +
       result.majestic.TopicalTrustFlow_Topic_0 + "," + result.majestic.TopicalTrustFlow_Value_0 + "," +
       result.majestic.TopicalTrustFlow_Topic_1 + "," + result.majestic.TopicalTrustFlow_Value_1 + "," +
-      result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2; 
+      result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2;
     }
     line += "\n";
 
