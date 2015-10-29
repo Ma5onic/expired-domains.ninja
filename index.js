@@ -19,15 +19,12 @@ var notAvailableTxtFile = NOT_AVAILABLE_TXT_FILE;
  */
 function Plugin(params) {
 
+    this.params = params;
     var logFile = "./logs/expireds.log";
     if (params && params.logFile) {
       logFile = params.logFile;
     }
     this.expiredLog = logs.createLogger("expireds", {"path" : logFile});
-
-    if (params.majecticKey) {
-      this.majecticKey = params.majecticKey;
-    }
 
     if (params && params.expiredTxtFile) {
       expiredTxtFile = params.expiredTxtFile;
@@ -39,6 +36,7 @@ function Plugin(params) {
 
     this.domains = [];
 
+
 }
 
 Plugin.prototype.crawl = function (result,$, callback) {
@@ -46,6 +44,7 @@ Plugin.prototype.crawl = function (result,$, callback) {
       // a page with a status of 500+ can be expired
       if (result.statusCode >= 500 && result.statusCode <= 599 ) {
         crawlLog.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "Crawl status 500 "});
+        //TODO : How to check if the domain name is valid ? At least if the url is valid ?
         this.expiredLog.info({"50*" : true, status : result.statusCode, url : result.url});
         this.check(URI.domain(result.uri), callback);
 
@@ -84,11 +83,9 @@ Plugin.prototype.check = function(domain, callback) {
       this.domains.push(domain);
     }
 
-    var params = {domain : domain};
-    if (this.majecticKey) {
-      params.majecticKey = this.majecticKey;
-    }
-    domainChecker(params, function(error, result) {
+    this.params.domain = domain;
+
+    domainChecker(this.params, function(error, result) {
 
         if (error) {
           return callback(error);
@@ -117,8 +114,17 @@ Plugin.prototype.check = function(domain, callback) {
  */
 function getLine(result) {
     //console.log(result);
-    var line = result.domain + "," + (result.pr ? result.pr : "no-pr") + "," + result.available + "," +
-               (result.whois.toString() ?  result.whois.toString(): "no-whois");
+    var line = result.domain + "," + result.isAlive + "," + result.pr  + "," + result.available;
+
+    if (result.whois) {
+      line += "," + result.whois.missingData + "," + result.whois.isValidDomain + "," + result.whois.isPendingDelete;
+      if (result.whois.registryData) {
+        line += "," + result.whois.registryData.createdDate;
+      }
+      else {
+        line += ",no-creation-date";
+      }
+    }
 
     if (result.majestic) {
       line += "," + result.majestic.ExtBackLinks + "," + result.majestic.RefDomains + "," +

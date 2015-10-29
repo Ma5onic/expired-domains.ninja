@@ -5,7 +5,7 @@ This [Crawler.Ninja](https://github.com/christophebe/crawler.ninja)  plugin aims
 
 Help & Forks welcome ! or please wait ... work in progress !
 
-Actually, the expired domain data are stored in the a txt file. We plan to add more flexiblities in the upcoming release.
+Actually, the expired domain data are stored in the a txt file. We plan to add more flexibilities in the upcoming releases.
 
 How to install
 --------------
@@ -44,11 +44,10 @@ proxyLoader.loadProxyFile(config, function(error, proxyList) {
 
 function crawl(proxyList){
   var end = function(){
-
-      conolog.log("end of the crawl");
-
+    console.log("Crawl done !");
   };
 
+  // Set the Crawl config
   crawler.init({
       externalDomains : true,
       externalHosts : true,
@@ -58,14 +57,16 @@ function crawl(proxyList){
       links : false, //link tags used for css, canonical, ...
       followRedirect : true,
       retries : 0
+  }, end, proxyList);
 
-  }, end);
-
-  //var log = new logger.Plugin();
-  var ed = new expired.Plugin({expiredTxtFile : "./logs/expireds.txt"});
+  var ed = new expired.Plugin({
+       expiredTxtFile : "./logs/expireds.txt",
+       majecticKey : "[your majecticKey]",
+       whois : {user : "[your whoisxmlapi name]", password : "[your whoisxmlapi password]"}
+  });
   crawler.registerPlugin(ed);
 
-  crawler.queue({url : "http://mysite.com"});
+  crawler.queue({url : "http://yourdomain.com"});
 }
 
 
