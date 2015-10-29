@@ -21,6 +21,8 @@ Crash course
 var proxyLoader = require("simple-proxies/lib/proxyfileloader");
 var crawler     = require("crawler-ninja");
 var ep          = require("crawler-ninja-expired");
+var cs          = require("crawler-ninja/plugins/console-plugin");
+
 
 var proxyFile = "proxies.txt";
 
@@ -64,6 +66,10 @@ function crawl(proxyList){
        majecticKey : "[your majecticKey]",
        whois : {user : "[your whoisxmlapi name]", password : "[your whoisxmlapi password]"}
   });
+
+  var consolePlugin = new cs.Plugin();
+  
+  crawler.registerPlugin(consolePlugin);
   crawler.registerPlugin(ed);
 
   crawler.queue({url : "http://yourdomain.com"});
