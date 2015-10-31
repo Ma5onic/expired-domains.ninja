@@ -1,5 +1,5 @@
 var fs              = require('fs');
-var URI             = require('crawler-ninja/lib/uri');
+var URI             = require('crawler-ninja-uri');
 var logs            = require("crawler-ninja-logger");
 var domainChecker   = require("check-domain");
 
@@ -46,7 +46,13 @@ Plugin.prototype.crawl = function (result,$, callback) {
         crawlLog.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "Crawl status 500 "});
         //TODO : How to check if the domain name is valid ? At least if the url is valid ?
         this.expiredLog.info({"50*" : true, status : result.statusCode, url : result.url});
-        this.check(URI.domain(result.uri), callback);
+        if (URI.isValidDomain(result.uri)) {
+          this.check(URI.domain(result.uri), callback);
+        }
+        else {
+          callback();
+        }
+
 
       }
       else {
@@ -61,7 +67,12 @@ Plugin.prototype.error = function(error, result, callback) {
         if (error.code == ERROR_DNS_LOOKUP) {
           var domain = URI.domain(result.uri);
           this.expiredLog.info({expired : true, domain : domain, url : result.url});
-          this.check(URI.domain(result.uri), callback);
+          if (URI.isValidDomain(result.uri)) {
+            this.check(URI.domain(result.uri), callback);
+          }
+          else {
+            callback(); 
+          }
         }
         else {
           // Just to be sure, catch other errors
