@@ -71,7 +71,7 @@ Plugin.prototype.error = function(error, result, callback) {
             this.check(URI.domain(result.uri), callback);
           }
           else {
-            callback(); 
+            callback();
           }
         }
         else {
@@ -128,13 +128,10 @@ function getLine(result) {
     var line = result.domain + "," + result.isAlive + "," + result.pr  + "," + result.available;
 
     if (result.whois) {
-      line += "," + result.whois.missingData + "," + result.whois.isValidDomain + "," + result.whois.isPendingDelete;
-      if (result.whois.registryData) {
-        line += "," + result.whois.registryData.createdDate;
-      }
-      else {
-        line += ",no-creation-date";
-      }
+      line += "," + result.whois.missingData + "," + result.whois.isValidDomain + "," + result.whois.isPendingDelete +
+              "," + result.whois.createdDate + "," + result.whois.expiresDate + "," + result.whois.expiredWaitingTime +
+              "," + result.whois.estimatedDomainAge;
+
     }
 
     if (result.majestic) {
