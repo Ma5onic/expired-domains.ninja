@@ -1,4 +1,5 @@
 var fs              = require('fs');
+var _               = require('underscore');
 var URI             = require('crawler-ninja-uri');
 var logs            = require("crawler-ninja-logger");
 var domainChecker   = require("check-domain");
@@ -7,11 +8,10 @@ var domainChecker   = require("check-domain");
 var ERROR_DNS_LOOKUP = "ENOTFOUND";
 var STATUS_DNS_LOOKUP_ERROR = "DNS lookup failed";
 var EXPIRED_TXT_FILE = process.cwd() + "/expireds.txt";
-var NOT_AVAILABLE_TXT_FILE = process.cwd() + "/not-available-errors.txt";
+//var NOT_AVAILABLE_TXT_FILE = process.cwd() + "/not-available-errors.txt";
 var crawlLog = logs.Logger;
 
 var expiredTxtFile = EXPIRED_TXT_FILE;
-var notAvailableTxtFile = NOT_AVAILABLE_TXT_FILE;
 /**
  *  Find expired domains
  *
@@ -30,13 +30,7 @@ function Plugin(params) {
       expiredTxtFile = params.expiredTxtFile;
     }
 
-    if (params && params.notAvailableTxtFile) {
-      notAvailableTxtFile = params.notAvailableTxtFile;
-    }
-
     this.domains = [];
-
-
 }
 
 Plugin.prototype.crawl = function (result,$, callback) {
@@ -85,7 +79,7 @@ Plugin.prototype.error = function(error, result, callback) {
 
 Plugin.prototype.check = function(domain, callback) {
     crawlLog.info({"url" : domain, "step" : "expired-domains-plugin", "message" : "check"});
-
+    console.log("check", domain);
     // don't check twice the same domain
     if (this.domains.indexOf(domain) > -1) {
       return callback();
@@ -93,24 +87,17 @@ Plugin.prototype.check = function(domain, callback) {
     else {
       this.domains.push(domain);
     }
+    var params = _.clone(this.params);
+    params.domain = domain;
 
-    this.params.domain = domain;
-
-    domainChecker(this.params, function(error, result) {
+    domainChecker(params, function(error, result) {
 
         if (error) {
           return callback(error);
         }
 
         var line = getLine(result);
-
-        if (result.available == "NOT-AVAILABLE") {
-
-            fs.appendFile(notAvailableTxtFile, line);
-        }
-        else {
-            fs.appendFile(expiredTxtFile, line);
-        }
+        fs.appendFile(expiredTxtFile, line);
 
         callback();
     });
@@ -138,6 +125,7 @@ function getLine(result) {
       line += "," + result.majestic.ExtBackLinks + "," + result.majestic.RefDomains + "," +
       result.majestic.RefDomainsEDU + "," + result.majestic.RefDomainsGOV + "," +
       result.majestic.TrustFlow + "," + result.majestic.CitationFlow + "," +
+      (result.majestic.CitationFlow / result.majestic.TrustFlow) + "," +
       result.majestic.TopicalTrustFlow_Topic_0 + "," + result.majestic.TopicalTrustFlow_Value_0 + "," +
       result.majestic.TopicalTrustFlow_Topic_1 + "," + result.majestic.TopicalTrustFlow_Value_1 + "," +
       result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2;

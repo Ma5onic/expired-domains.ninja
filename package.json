@@ -1,6 +1,6 @@
 {
   "name": "crawler-ninja-expired",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Expired domains finder for crawler.ninja",
   "main": "index.js",
   "repository": {
@@ -9,8 +9,9 @@
   },
   "dependencies": {
     "check-domain": "*",
-    "crawler-ninja-logger" : "*",
-    "crawler-ninja-uri" : "*"
+    "crawler-ninja-logger": "*",
+    "crawler-ninja-uri": "*",
+    "underscore": "*"
   },
   "devDependencies": {
     "mocha": "*",
