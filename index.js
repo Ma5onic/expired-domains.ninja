@@ -1,17 +1,13 @@
 var fs              = require('fs');
 var _               = require('underscore');
 var URI             = require('crawler-ninja-uri');
-var logs            = require("crawler-ninja-logger");
+var log             = require("crawler-ninja-logger").Logger;
 var domainChecker   = require("check-domain");
 
 
 var ERROR_DNS_LOOKUP = "ENOTFOUND";
 var STATUS_DNS_LOOKUP_ERROR = "DNS lookup failed";
-var EXPIRED_TXT_FILE = process.cwd() + "/expireds.txt";
-//var NOT_AVAILABLE_TXT_FILE = process.cwd() + "/not-available-errors.txt";
-var crawlLog = logs.Logger;
 
-var expiredTxtFile = EXPIRED_TXT_FILE;
 /**
  *  Find expired domains
  *
@@ -20,12 +16,6 @@ var expiredTxtFile = EXPIRED_TXT_FILE;
 function Plugin(params) {
 
     this.params = params;
-    var logFile = "./logs/expireds.log";
-    if (params && params.logFile) {
-      logFile = params.logFile;
-    }
-    this.expiredLog = logs.createLogger("expireds", {"path" : logFile});
-
     if (params && params.expiredTxtFile) {
       expiredTxtFile = params.expiredTxtFile;
     }
@@ -35,12 +25,10 @@ function Plugin(params) {
 
 Plugin.prototype.crawl = function (result,$, callback) {
 
-      // a page with a status of 500+ can be expired
-      if (result.statusCode >= 500 && result.statusCode <= 599 ) {
-        crawlLog.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "Crawl status 500 "});
-        //TODO : How to check if the domain name is valid ? At least if the url is valid ?
-        this.expiredLog.info({"50*" : true, status : result.statusCode, url : result.url});
+      // a page with a status between 400 & 500 can be an expired domain or a domain to track
+      if (result.isExternal && result.statusCode >= 400 && result.statusCode <= 599 ) {
         if (URI.isValidDomain(result.uri)) {
+          log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP status : " + result.statusCode});
           this.check(URI.domain(result.uri), callback);
         }
         else {
@@ -57,11 +45,10 @@ Plugin.prototype.crawl = function (result,$, callback) {
 
 Plugin.prototype.error = function(error, result, callback) {
 
-        crawlLog.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "error" });
-        if (error.code == ERROR_DNS_LOOKUP) {
-          var domain = URI.domain(result.uri);
-          this.expiredLog.info({expired : true, domain : domain, url : result.url});
+        if (result.isExternal) {
+
           if (URI.isValidDomain(result.uri)) {
+            log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP error : " + error.code});
             this.check(URI.domain(result.uri), callback);
           }
           else {
@@ -69,8 +56,6 @@ Plugin.prototype.error = function(error, result, callback) {
           }
         }
         else {
-          // Just to be sure, catch other errors
-          this.expiredLog.info({error : true, code : error.code, url : result.url});
           callback();
         }
 
@@ -78,8 +63,6 @@ Plugin.prototype.error = function(error, result, callback) {
 
 
 Plugin.prototype.check = function(domain, callback) {
-    crawlLog.info({"url" : domain, "step" : "expired-domains-plugin", "message" : "check"});
-    console.log("check", domain);
     // don't check twice the same domain
     if (this.domains.indexOf(domain) > -1) {
       return callback();
@@ -111,7 +94,7 @@ Plugin.prototype.check = function(domain, callback) {
  * TopicalTrustFlow 2, TopicalTrustFlow Value 2
  */
 function getLine(result) {
-    //console.log(result);
+
     var line = result.domain + "," + result.isAlive + "," + result.pr  + "," + result.available;
 
     if (result.whois) {
