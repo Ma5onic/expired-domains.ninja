@@ -29,7 +29,7 @@ Plugin.prototype.crawl = function (result,$, callback) {
       if (result.isExternal && result.statusCode >= 400 && result.statusCode <= 599 ) {
         if (URI.isValidDomain(result.uri)) {
           log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP status : " + result.statusCode});
-          this.check(URI.domain(result.uri), callback);
+          this.check(result.url, result.statusCode, callback);
         }
         else {
           callback();
@@ -49,7 +49,7 @@ Plugin.prototype.error = function(error, result, callback) {
 
           if (URI.isValidDomain(result.uri)) {
             log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP error : " + error.code});
-            this.check(URI.domain(result.uri), callback);
+            this.check(result.url, error.code, callback);
           }
           else {
             callback();
@@ -61,8 +61,16 @@ Plugin.prototype.error = function(error, result, callback) {
 
 }
 
+/**
+ *  Check domain
+ *
+ *
+ * @param
+ * @return
+ */
+Plugin.prototype.check = function(url, errorInfo, callback) {
 
-Plugin.prototype.check = function(domain, callback) {
+    var domain = URI.domain(url);
     // don't check twice the same domain
     if (this.domains.indexOf(domain) > -1) {
       return callback();
@@ -70,6 +78,7 @@ Plugin.prototype.check = function(domain, callback) {
     else {
       this.domains.push(domain);
     }
+
     var params = _.clone(this.params);
     params.domain = domain;
 
@@ -79,7 +88,7 @@ Plugin.prototype.check = function(domain, callback) {
           return callback(error);
         }
 
-        var line = getLine(result);
+        var line = getLine(result, url, errorInfo);
         fs.appendFile(expiredTxtFile, line);
 
         callback();
@@ -89,11 +98,8 @@ Plugin.prototype.check = function(domain, callback) {
 /**
  * Build a new line. the line format is composed of the following data :
  *
- * domain name, PR, availability, whois, external backlinks, ref domains, ref domains edu, ref domains gov,
- * TrustFlow, CitationFlow, TopicalTrustFlow 1, TopicalTrustFlow Value 1, TopicalTrustFlow 2, TopicalTrustFlow Value 2,
- * TopicalTrustFlow 2, TopicalTrustFlow Value 2
  */
-function getLine(result) {
+function getLine(result, url, errorInfo) {
 
     var line = result.domain + "," + result.isAlive + "," + result.pr  + "," + result.available;
 
@@ -113,7 +119,8 @@ function getLine(result) {
       result.majestic.TopicalTrustFlow_Topic_1 + "," + result.majestic.TopicalTrustFlow_Value_1 + "," +
       result.majestic.TopicalTrustFlow_Topic_2 + "," + result.majestic.TopicalTrustFlow_Value_2;
     }
-    line += "\n";
+
+    line += ',' + errorInfo + ',' + url + "\n";
 
     return line;
 }
