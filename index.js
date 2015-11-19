@@ -101,7 +101,7 @@ Plugin.prototype.check = function(url, errorInfo, callback) {
  */
 function getLine(result, url, errorInfo) {
 
-    var line = result.domain + "," + result.isAlive + "," + result.pr  + "," + result.available;
+    var line = result.domain + "," + result.isDNSFound + ", " + result.ip + "," +  result.isAlive + "," + result.pr  + "," + result.available;
 
     if (result.whois) {
       line += "," + result.whois.missingData + "," + result.whois.isValidDomain + "," + result.whois.isPendingDelete +
