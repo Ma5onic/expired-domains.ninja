@@ -2,7 +2,7 @@ var fs              = require('fs');
 var _               = require('underscore');
 var URI             = require('crawler-ninja-uri');
 var log             = require("crawler-ninja-logger").Logger;
-var domainChecker   = require("check-domain");
+var checkDomain     = require("check-domain");
 
 
 var ERROR_DNS_LOOKUP = "ENOTFOUND";
@@ -17,7 +17,7 @@ function Plugin(params) {
 
     this.params = params;
     if (params && params.expiredTxtFile) {
-      expiredTxtFile = params.expiredTxtFile;
+      this.expiredTxtFile = params.expiredTxtFile;
     }
 
     this.domains = [];
@@ -27,8 +27,8 @@ Plugin.prototype.crawl = function (result,$, callback) {
 
       // a page with a status between 400 & 500 can be an expired domain or a domain to track
       if (result.isExternal && result.statusCode >= 400 && result.statusCode <= 599 ) {
-        if (URI.isValidDomain(result.uri)) {
-          log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP status : " + result.statusCode});
+        if (URI.isValidDomain(result.url)) {
+          log.info({"url" : result.url, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP status : " + result.statusCode});
           this.check(result.url, result.statusCode, callback);
         }
         else {
@@ -41,14 +41,14 @@ Plugin.prototype.crawl = function (result,$, callback) {
         callback();
       }
 
-}
+};
 
 Plugin.prototype.error = function(error, result, callback) {
 
         if (result.isExternal) {
 
-          if (URI.isValidDomain(result.uri)) {
-            log.info({"url" : result.uri, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP error : " + error.code});
+          if (URI.isValidDomain(result.url)) {
+            log.info({"url" : result.url, "step" : "expired-domains-plugin", "message" : "External URL with an HTTP error : " + error.code});
             this.check(result.url, error.code, callback);
           }
           else {
@@ -59,7 +59,7 @@ Plugin.prototype.error = function(error, result, callback) {
           callback();
         }
 
-}
+};
 
 /**
  *  Check domain
@@ -81,19 +81,19 @@ Plugin.prototype.check = function(url, errorInfo, callback) {
 
     var params = _.clone(this.params);
     params.domain = domain;
-
-    domainChecker(params, function(error, result) {
+    var self = this;
+    checkDomain(params, function(error, result) {
 
         if (error) {
           return callback(error);
         }
 
         var line = getLine(result, url, errorInfo);
-        fs.appendFile(expiredTxtFile, line);
+        fs.appendFile(self.expiredTxtFile, line);
 
         callback();
     });
-}
+};
 
 /**
  * Build a new line. the line format is composed of the following data :
@@ -101,12 +101,12 @@ Plugin.prototype.check = function(url, errorInfo, callback) {
  */
 function getLine(result, url, errorInfo) {
 
-    var line = result.domain + "," + result.isDNSFound + ", " + result.ip + "," +  result.isAlive + "," + result.pr  + "," + result.available;
+    var line = result.domain + "," + result.isDNSFound + ", " + (result.ip ? result.ip : "not-found") + "," +  result.isAlive + ","  + result.isAvailable;
 
     if (result.whois) {
       line += "," + result.whois.missingData + "," + result.whois.isValidDomain + "," + result.whois.isPendingDelete +
-              "," + result.whois.createdDate + "," + result.whois.expiresDate + "," + result.whois.expiredWaitingTime +
-              "," + result.whois.estimatedDomainAge;
+              "," + result.whois.isRedemptionPeriod + "," + result.whois.createdDate + "," + result.whois.expiresDate +
+              "," + result.whois.expiredWaitingTime + "," + result.whois.estimatedDomainAge;
 
     }
 
