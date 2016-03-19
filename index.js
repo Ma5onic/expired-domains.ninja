@@ -88,8 +88,11 @@ Plugin.prototype.check = function(url, errorInfo, callback) {
           return callback(error);
         }
 
-        var line = getLine(result, url, errorInfo);
-        fs.appendFile(self.expiredTxtFile, line);
+        if (! result.isDNSFound) {
+          var line = getLine(result, url, errorInfo);
+          fs.appendFile(self.expiredTxtFile, line);
+        }
+
 
         callback();
     });
